@@ -18,7 +18,7 @@ services:
     networks:
       - tarificator-network
 
-  client-backend:
+  account-backend:
     build:
       context: .
       dockerfile: Dockerfile

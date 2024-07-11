@@ -15,7 +15,7 @@ public interface AccountMapper {
 
     default List<AccountDto> toDtoList(List<Account> accountList) {
         return accountList.stream()
-                .map(this::toDto)
-                .toList();
+            .map(this::toDto)
+            .toList();
     }
 }

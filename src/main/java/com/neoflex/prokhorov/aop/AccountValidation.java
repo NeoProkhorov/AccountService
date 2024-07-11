@@ -1,8 +1,12 @@
 package com.neoflex.prokhorov.aop;
 
+import com.neoflex.prokhorov.domain.AccountRepository;
 import com.neoflex.prokhorov.service.dto.AccountDto;
 import com.neoflex.prokhorov.values.ApplicationType;
 import jakarta.validation.ConstraintViolationException;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -16,15 +20,21 @@ import java.util.function.BiPredicate;
 @Component
 @Aspect
 @Slf4j
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AccountValidation {
     private final String APPLICATION_MSG = "Попытка сохранения аккаунта из неизвестного ресурса: %s";
     private final String VALID_MSG = "Ошибка валидации: обязательные поля ресурса %s не заполнены";
     private final String PASSPORT_MSG = "Ошибка валидации: поле пасспорт должно содержать 10 цифр";
     private final String PHONE_MSG = "Ошибка валидации: номер телефона содержать 11 цифр, начиная с 7";
     private final String MAIL_MSG = "Некорректный адрес электронной почты";
+    private final String LOGIN_MSG = "Данный логин уже существует";
+    private final String PASSWORD_MSG = "Пароль не может быть пустым";
     private final String PASSPORT_REGEX = "\\d{10}";
     private final String MAIL_REGEX = "^[A-Za-z0-9+_.-]+@(.+)$";
     private final String PHONE_REGEX = "^(7)\\d{10}";
+
+    AccountRepository repository;
 
     private final BiPredicate<String, String> MATCH_PREDICATE = (s, regex) -> Strings.isEmpty(s) || s.matches(regex);
 
@@ -35,6 +45,14 @@ public class AccountValidation {
         ApplicationType applicationType = ApplicationType.getByHeader(type).orElseThrow(
             () -> new ConstraintViolationException(String.format(APPLICATION_MSG, type), null)
         );
+
+        if (repository.findByLogin(dto.getLogin()).isPresent()) {
+            throw new ConstraintViolationException(LOGIN_MSG, null);
+        }
+
+        if (Strings.isBlank(dto.getPassword())) {
+            throw new ConstraintViolationException(PASSWORD_MSG, null);
+        }
 
         if (!isApplicationValid(applicationType, dto)) {
             throw new ConstraintViolationException(String.format(VALID_MSG, applicationType.getHeader()), null);

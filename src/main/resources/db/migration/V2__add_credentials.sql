@@ -1,0 +1,5 @@
+ALTER TABLE IF EXISTS account
+    ADD COLUMN IF NOT EXISTS login text NOT NULL,
+    DROP CONSTRAINT IF EXISTS loqin_uniq,
+    ADD CONSTRAINT loqin_uniq UNIQUE (login),
+    ADD COLUMN IF NOT EXISTS password text;

@@ -18,4 +18,6 @@ public class AccountDto {
     String mail;
     String registrationAddress;
     String factAddress;
+    String login;
+    String password;
 }

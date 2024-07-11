@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("account")
+@RequestMapping("accounts")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AccountController {
@@ -38,5 +38,10 @@ public class AccountController {
         @RequestHeader(name = "x-Source", required = false) String applicationType, @RequestBody AccountDto dto
     ) {
         return accountService.create(dto);
+    }
+
+    @GetMapping("by-username")
+    AccountDto getByUsername(@RequestParam String username) {
+        return accountService.findByLogin(username);
     }
 }

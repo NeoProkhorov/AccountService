@@ -27,9 +27,12 @@ public class AccountService {
     }
 
     public AccountDto getById(Long id) {
+        return accountMapper.toDto(findById(id));
+    }
+
+    private Account findById(Long id) {
         return accountRepository.findById(id)
-                .map(accountMapper::toDto)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Не найден аккаунт с id %s", id)));
+            .orElseThrow(() -> new EntityNotFoundException(String.format("Не найден аккаунт с id %s", id)));
     }
 
     public AccountDto create(AccountDto dto) {
@@ -40,5 +43,11 @@ public class AccountService {
     public List<AccountDto> getAllByFilter(AccountFilterDto dto) {
         List<Account> accounts = accountRepository.findAll(accountSpecification.getAccounts(dto));
         return accountMapper.toDtoList(accounts);
+    }
+
+    public AccountDto findByLogin(String login) {
+        Account account = accountRepository.findByLogin(login)
+            .orElseThrow(() -> new EntityNotFoundException(String.format("Не найден аккаунт с логином %s", login)));
+        return accountMapper.toDto(account);
     }
 }

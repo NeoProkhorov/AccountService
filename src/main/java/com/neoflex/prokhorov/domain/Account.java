@@ -1,6 +1,7 @@
 package com.neoflex.prokhorov.domain;
 
 import jakarta.persistence.Entity;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.jpa.domain.AbstractPersistable;
@@ -22,4 +23,7 @@ public class Account extends AbstractPersistable<Long> {
     String mail;
     String registrationAddress;
     String factAddress;
+    @NotNull
+    String login;
+    String password;
 }
